@@ -1,0 +1,66 @@
+<html>
+<head>
+<title>index.php</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cf8e6d;}
+.s1 { color: #bcbec4;}
+.s2 { color: #6aab73;}
+.s3 { color: #bcbec4;}
+.s4 { color: #9876aa;}
+.s5 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+index.php</font>
+</center></td></tr></table>
+<pre><span class="s0">&lt;?php</span>
+<span class="s0">require </span><span class="s2">'vendor/autoload.php'</span><span class="s3">;</span>
+<span class="s0">if </span><span class="s3">(</span><span class="s0">isset</span><span class="s3">(</span><span class="s4">$_POST</span><span class="s3">[</span><span class="s2">'authkey'</span><span class="s3">]) &amp;&amp; (</span><span class="s4">$_POST</span><span class="s3">[</span><span class="s2">'authkey'</span><span class="s3">]== </span><span class="s2">'abc'</span><span class="s3">)){</span>
+<span class="s4">$stripe </span><span class="s3">= </span><span class="s0">new </span><span class="s1">\</span><span class="s3">Stripe</span><span class="s1">\</span><span class="s3">StripeClient(</span><span class="s2">'sk_test_51OFWvTLb2fG7dWSAVKtkUIw6CcEsctUy9g3AJzMkleJJDqIH4tqGu2xtDp5QnS10eHHl0mAgG0Dar87Qdmk7jhxF00gV2THkjt'</span><span class="s3">);</span>
+
+
+<span class="s4">$customer </span><span class="s3">= </span><span class="s4">$stripe</span><span class="s3">-&gt;customers-&gt;create(</span>
+    <span class="s3">[</span>
+        <span class="s2">'name' </span><span class="s3">=&gt; </span><span class="s2">&quot;Vet_Services&quot;</span><span class="s3">,</span>
+        <span class="s2">'address' </span><span class="s3">=&gt; [</span>
+            <span class="s2">'line1' </span><span class="s3">=&gt;</span><span class="s2">'Demo address'</span><span class="s3">,</span>
+            <span class="s2">'postal_code' </span><span class="s3">=&gt; </span><span class="s2">'738933'</span><span class="s3">,</span>
+            <span class="s2">'city' </span><span class="s3">=&gt; </span><span class="s2">'New York'</span><span class="s3">,</span>
+            <span class="s2">'state' </span><span class="s3">=&gt; </span><span class="s2">'NY'</span><span class="s3">,</span>
+            <span class="s2">'country' </span><span class="s3">=&gt; </span><span class="s2">'US'</span><span class="s3">,</span>
+
+<span class="s3">]</span>
+    <span class="s3">]</span>
+<span class="s3">);</span>
+<span class="s4">$ephemeralKey </span><span class="s3">= </span><span class="s4">$stripe</span><span class="s3">-&gt;ephemeralKeys-&gt;create([</span>
+    <span class="s2">'customer' </span><span class="s3">=&gt; </span><span class="s4">$customer</span><span class="s3">-&gt;id,</span>
+<span class="s3">], [</span>
+    <span class="s2">'stripe_version' </span><span class="s3">=&gt; </span><span class="s2">'2022-08-01'</span><span class="s3">,</span>
+<span class="s3">]);</span>
+<span class="s4">$paymentIntent </span><span class="s3">= </span><span class="s4">$stripe</span><span class="s3">-&gt;paymentIntents-&gt;create([</span>
+    <span class="s2">'amount' </span><span class="s3">=&gt; </span><span class="s5">333</span><span class="s3">,</span>
+    <span class="s2">'currency' </span><span class="s3">=&gt; </span><span class="s2">'usd'</span><span class="s3">,</span>
+    <span class="s2">'description' </span><span class="s3">=&gt; </span><span class="s2">'Payment for Booking Services'</span><span class="s3">,</span>
+    <span class="s2">'customer' </span><span class="s3">=&gt; </span><span class="s4">$customer</span><span class="s3">-&gt;id,</span>
+    <span class="s2">'automatic_payment_methods' </span><span class="s3">=&gt; [</span>
+        <span class="s2">'enabled' </span><span class="s3">=&gt; </span><span class="s2">'true'</span><span class="s3">,</span>
+    <span class="s3">],</span>
+<span class="s3">]);</span>
+
+<span class="s0">echo </span><span class="s3">json_encode(</span>
+    <span class="s3">[</span>
+        <span class="s2">'paymentIntent' </span><span class="s3">=&gt; </span><span class="s4">$paymentIntent</span><span class="s3">-&gt;client_secret,</span>
+        <span class="s2">'ephemeralKey' </span><span class="s3">=&gt; </span><span class="s4">$ephemeralKey</span><span class="s3">-&gt;secret,</span>
+        <span class="s2">'customer' </span><span class="s3">=&gt; </span><span class="s4">$customer</span><span class="s3">-&gt;id,</span>
+        <span class="s2">'publishableKey' </span><span class="s3">=&gt; </span><span class="s2">'pk_test_51OFWvTLb2fG7dWSAV6AF4EgJwNtn7LKaayKPXXGL4waVQRum5PCdxiQoZtjuKBKxQMKmxZ7Gky7wp8mPPCLxsxuy00EDcy2wnL'</span>
+    <span class="s3">]</span>
+<span class="s3">);</span>
+<span class="s3">http_response_code(</span><span class="s5">200</span><span class="s3">);</span>
+<span class="s3">} </span><span class="s0">echo </span><span class="s2">&quot;Not authorised&quot;</span><span class="s3">;</span>
+</pre>
+</body>
+</html>
